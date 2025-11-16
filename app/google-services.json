@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "537366859247",
+    "project_id": "avianaapp1",
+    "storage_bucket": "avianaapp1.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:537366859247:android:fe13bd95c8aa3cecc23a1a",
+        "android_client_info": {
+          "package_name": "skosana.avianaapp1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB6sgFghHUYnhL79E5Q_rXDo_UvPbpffYc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:537366859247:android:a40d85acfa036c93c23a1a",
+        "android_client_info": {
+          "package_name": "student.projects.aviana8"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB6sgFghHUYnhL79E5Q_rXDo_UvPbpffYc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
