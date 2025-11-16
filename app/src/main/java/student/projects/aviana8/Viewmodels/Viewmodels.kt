@@ -9,6 +9,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.tasks.CancellationTokenSource
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,11 +18,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import student.projects.aviana8.Screens.Screen
+import student.projects.aviana8.Services.LoginRegisterImpl
 
 
-class AuthViewModel : ViewModel() {
+class AuthViewModel(
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
+) : ViewModel() {
     // Services implementation
-   // private val _services = LoginRegisterImpl(auth)
+    private val _services = LoginRegisterImpl(auth)
+
 
     // Auth state - Updated to match our NetworkResponse<Any?> type
     private var _authState: MutableStateFlow<NetworkResponse<Any?>> =
@@ -81,23 +86,36 @@ class AuthViewModel : ViewModel() {
     }*/
 
     @SuppressLint("SuspiciousIndentation")
-   // @OptIn(ExperimentalCoroutinesApi::class)
     suspend fun loginToFirebase(user: LoginUserDTO) = withContext(Dispatchers.IO) {
         try {
             _authState.emit(NetworkResponse.Loading)
 
-         //   val result = _services.loginToFirebase(user)?.await(CancellationTokenSource())
+            // Use your LoginRegisterImpl service
+            val result = _services.loginToFirebase(user)
 
-         /*   if (result?.user != null) {
-                _authState.emit(NetworkResponse.Success("Login successful"))
+            if (result != null) {
+                // Add success listener to handle the actual authentication result
+                result.addOnSuccessListener { authResult ->
+                    viewModelScope.launch {
+                        if (authResult.user != null) {
+                            _authState.emit(NetworkResponse.Success("Login successful"))
+                        } else {
+                            _authState.emit(NetworkResponse.Error("Login failed - no user returned"))
+                        }
+                    }
+                }.addOnFailureListener { exception ->
+                    viewModelScope.launch {
+                        _authState.emit(NetworkResponse.Error(exception.message ?: "Login failed"))
+                    }
+                }
             } else {
-                throw Exception("Login failed - no user returned")
-            }*/
+                throw Exception("Login service returned null")
+            }
 
         } catch (e: Exception) {
             _authState.emit(
                 NetworkResponse.Error(
-                    message = e.message ?: "An unexpected error occurred"
+                    message = e.message ?: "An unexpected error occurred during login"
                 )
             )
         }
@@ -175,6 +193,14 @@ sealed class NetworkResponse<out T> {
  data class LoginUserDTO(
     val email: String,
     val password: String
+)
+
+// RegisterUserDTO.kt
+data class RegisterUserDTO(
+    val Name: String = "",
+    val Email: String = "",
+    val Password: String = "",
+    val ConfirmPassword: String = ""
 )
 
 class HomeViewModel : ViewModel() {

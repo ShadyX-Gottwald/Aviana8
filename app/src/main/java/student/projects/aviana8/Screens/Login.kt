@@ -64,6 +64,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import student.projects.aviana8.Viewmodels.AuthViewModel
 import student.projects.aviana8.Viewmodels.LoginUserDTO
@@ -74,6 +78,7 @@ import student.projects.aviana8.ui.theme.GreenOutline
 import student.projects.aviana8.ui.theme.Peach
 import student.projects.aviana8.ui.theme.TextBrown
 import student.projects.aviana8.ui.theme.WhiteNew
+import student.projects.aviana8.ui.theme.WhiteishBg
 
 @Composable
 fun LoginPage(
@@ -84,6 +89,7 @@ fun LoginPage(
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+    var scope = CoroutineScope(CoroutineName("Scope"))
 
     Scaffold(
         modifier = Modifier
@@ -113,8 +119,8 @@ fun LoginPage(
                             navToHomePage()
                         }
                         is NetworkResponse.Error<*> -> {
-                           // val errorMessage =  NetworkResponse.Error<*>).message
-                           // Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
+                            val errorMessage =  (authState as NetworkResponse.Error<*>).message
+                            Toast.makeText(context, errorMessage, Toast.LENGTH_LONG).show()
                         }
                         else -> {
                             // Handle other states if needed
@@ -211,8 +217,33 @@ fun LoginPage(
                     )
 
                 }
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .padding(top = 10.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(Brown),
+                    onClick = {
+                        //Validate
 
-                Spacer(modifier = Modifier.height(20.dp))
+                        scope.launch(Dispatchers.IO){
+                            //LoginButtonClick.invoke(vIewModel.loginUser)
+                            viewModel.loginToFirebase(viewModel.loginUser)
+                        }
+
+                    } ,
+
+                    ) {
+                    Text(
+                        text = "Login" , fontWeight = FontWeight.SemiBold ,
+                        color = WhiteishBg ,
+                        textAlign = TextAlign.Center ,
+                        fontSize = 12.sp
+                    )
+
+                }
+
+               // Spacer(modifier = Modifier.height(20.dp))
 
                 // Action Section
                 ActionSection(
@@ -385,7 +416,7 @@ fun ActionSection(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Login Button
-        Button(
+       /* Button(
             onClick = onLoginClick,
             modifier = Modifier
                 .fillMaxWidth()
@@ -416,6 +447,8 @@ fun ActionSection(
                 )
             }
         }
+        */
+
 
         Spacer(modifier = Modifier.height(16.dp))
 
