@@ -8,14 +8,17 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
 import androidx.annotation.RequiresPermission
+import androidx.compose.runtime.mutableStateOf
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import student.projects.aviana8.Data.HotspotEntity
 import student.projects.aviana8.Services.BirdHotspot
 import student.projects.aviana8.Services.HotspotRepository
 import student.projects.aviana8.Services.LocationResult
@@ -63,6 +66,56 @@ class HomeViewModel(
         checkNetworkStatus()
         //getCurrentLocation()
         //startLocationUpdates()
+    }
+
+    // Simple states
+    val hotspotsSimple = mutableStateOf<List<BirdHotspot>>(emptyList())
+    val cachedDataSimple= mutableStateOf<List<HotspotEntity>>(emptyList())
+
+
+    val isLoadingSimple = mutableStateOf(true)
+    val errorMessageSimple = mutableStateOf<String?>(null)
+
+    // Simple methods
+    fun loadData(isOnline: Boolean, lat: Double = 40.7128, lng: Double = -74.0060) {
+        viewModelScope.launch {
+            isLoadingSimple.value = true
+            errorMessageSimple.value = null
+            delay(3000)
+
+            try {
+                if (isOnline) {
+                    // Fetch from API and cache
+                    val result = hotspotRepository.getNearbyHotspots(lat, lng, ebirdApiKey)
+                    if (result.isSuccess) {
+                        hotspotsSimple.value = result.getOrDefault(emptyList())
+                    } else {
+                        // If API fails, try cache
+                        loadFromCache()
+                    }
+                } else {
+                    // Offline - load from cache
+                    loadFromCache()
+                }
+            } catch (e: Exception) {
+                errorMessageSimple.value = "Error: ${e.message}"
+            } finally {
+                isLoadingSimple.value = false
+            }
+        }
+    }
+
+    private suspend fun loadFromCache() {
+        val cachedData = hotspotRepository.getCachedHotspots()
+        if (cachedDataSimple.value.isNotEmpty()) {
+            hotspotsSimple.value = cachedData.getOrDefault(emptyList())
+        } else {
+            errorMessageSimple.value = "No cached data available"
+        }
+    }
+
+    fun refresh(isOnline: Boolean) {
+        loadData(isOnline)
     }
 
     @RequiresPermission(allOf = [ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION])
