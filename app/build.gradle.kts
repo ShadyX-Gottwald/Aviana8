@@ -46,7 +46,17 @@ dependencies {
   //  implementation("androidx.compose.material3:material3:1.2.0")
  //   implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
     implementation ("androidx.compose.material:material-icons-extended:")
+    // Networking
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
+    // Location Services
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+
+    // Compose
+    implementation("androidx.compose.material3:material3:1.2.0")
+    implementation("androidx.navigation:navigation-compose:2.7.6")
+    implementation("com.google.accompanist:accompanist-swiperefresh:0.32.0")
     // For permissions
     implementation("androidx.activity:activity-ktx:1.8.2")
     implementation("com.google.accompanist:accompanist-permissions:0.32.0")

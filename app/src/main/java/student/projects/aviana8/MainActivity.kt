@@ -21,12 +21,17 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import student.projects.aviana8.Data.BirdDatabase
 import student.projects.aviana8.Screens.LoginPage
 
 import student.projects.aviana8.Screens.MainBottomNavigation
 
 import student.projects.aviana8.Screens.Screen
 import student.projects.aviana8.Screens.WelcomeScreen
+import student.projects.aviana8.Services.HotspotAPIClient
+import student.projects.aviana8.Services.HotspotRepository
+import student.projects.aviana8.Services.LocationService
+import student.projects.aviana8.Services.NetworkMonitor
 import student.projects.aviana8.Viewmodels.AppViewModel
 
 import student.projects.aviana8.Viewmodels.AuthViewModel
@@ -47,13 +52,27 @@ class MainActivity : ComponentActivity() {
     private lateinit var profileViewModel: ProfileViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Initialize all components
+        val birdDatabase = BirdDatabase.getInstance(this)
+        val locationService = LocationService(this)
+        val networkMonitor = NetworkMonitor(this)
+
+        val hotspotRepository = HotspotRepository(
+            hotspotService = HotspotAPIClient.HotspotService,
+            database = birdDatabase,
+            networkMonitor = networkMonitor,
+            context = this
+        )
        // enableEdgeToEdge()
         // Initialize ViewModels
         appViewModel = ViewModelProvider(this)[AppViewModel::class.java]
         authViewModel = ViewModelProvider(this)[AuthViewModel::class.java]
-        homeViewModel = ViewModelProvider(this)[HomeViewModel::class.java]
+        //homeViewModel = ViewModelProvider(this)[HomeViewModel::class.java]
         birdsViewModel = ViewModelProvider(this)[BirdsViewModel::class.java]
         profileViewModel = ViewModelProvider(this)[ProfileViewModel::class.java]
+        val homeViewModel by lazy{ HomeViewModel(
+            hotspotRepository = hotspotRepository ,locationService) }
         setContent {
             Aviana8Theme {
                 Surface(

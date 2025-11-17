@@ -488,19 +488,7 @@ fun FooterSection() {
 
 
 // HomeScreen.kt
-@Composable
-fun HomeScreen(
-    homeViewModel: HomeViewModel,
-    profileViewModel: ProfileViewModel
-) {
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Text("Home Screen", style = MaterialTheme.typography.headlineMedium)
-        Text("Welcome to Bird Watching App")
-        // Home content
-    }
-}
+
 
 // BirdsScreen.kt
 @Composable

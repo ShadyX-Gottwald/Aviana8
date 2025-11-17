@@ -203,25 +203,6 @@ data class RegisterUserDTO(
     val ConfirmPassword: String = ""
 )
 
-class HomeViewModel : ViewModel() {
-    val homeData = mutableStateOf("Home Data")
-}
 
-class BirdsViewModel : ViewModel() {
-    //val birdsList = mutableStateListOf<Bird>()
-}
 
-class ProfileViewModel : ViewModel() {
-   // val userProfile = mutableStateOf<UserProfile?>(null)
-}
-
-class AppViewModel : ViewModel() {
-    // Shared app state
-    var isLoggedIn by mutableStateOf(false)
-   // var currentUser by mutableStateOf<User?>(null)
-
-    // Navigation state
-    var startDestination by mutableStateOf(Screen.Welcome.route)
-    //var it = Screen.Welcome.route
-}
 
