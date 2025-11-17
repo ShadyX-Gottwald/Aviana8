@@ -491,15 +491,7 @@ fun FooterSection() {
 
 
 // BirdsScreen.kt
-@Composable
-fun BirdsScreen(birdsViewModel: BirdsViewModel) {
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Text("Birds Catalog", style = MaterialTheme.typography.headlineMedium)
-        // Birds list content
-    }
-}
+
 
 // ProfileSettingsScreen.kt
 @Composable

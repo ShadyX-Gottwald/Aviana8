@@ -73,6 +73,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import student.projects.aviana8.Services.BirdHotspot
+import student.projects.aviana8.Services.HotspotRepository
 import student.projects.aviana8.Services.NotableBirdSightings
 import student.projects.aviana8.Viewmodels.HomeViewModel
 import student.projects.aviana8.Viewmodels.LocationState
@@ -99,9 +100,11 @@ fun HomeScreen(
 
     val isOnline = rememberNetworkState()
 
+
     // Load data when screen starts or network changes
     LaunchedEffect(isOnline) {
-        homeViewModel.loadData(isOnline)
+      //  homeViewModel.loadDataSimple(isOnline)
+        homeViewModel.fetchNearbyHotspots()
     }
 
     Scaffold(
@@ -122,7 +125,7 @@ fun HomeScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { homeViewModel.refresh(isOnline) },
+                onClick = {  },
                 containerColor = Color.Blue
             ) {
                 Icon(Icons.Default.Refresh, "Refresh")
@@ -135,7 +138,7 @@ fun HomeScreen(
                 .padding(padding)
         ) {
             // Show loading
-            if (homeViewModel.isLoadingSimple.value) {
+          /*  if (homeViewModel.isLoadingSimple.value) {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -146,6 +149,7 @@ fun HomeScreen(
                     Text("Loading hotspots...")
                 }
             }
+
 
             // Show error
             else if (homeViewModel.errorMessageSimple.value != null) {
@@ -163,14 +167,14 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(homeViewModel.errorMessageSimple.value ?: "Unknown error")
                     Spacer(modifier = Modifier.height(16.dp))
-                    Button(onClick = { homeViewModel.refresh(isOnline) }) {
+                    Button(onClick = {  }) {
                         Text("Retry")
                     }
                 }
-            }
+            }*/
 
             // Show hotspots list
-            else
+          /*  else
                 LazyColumn {
                     // Network status banner
                     item {
@@ -231,7 +235,75 @@ fun HomeScreen(
                             }
                         }
                     }
+                }*/
+            when(val result = homeViewModel.hotspotsState) {
+                is NetworkResponse.Success<*> -> {
+                    LazyColumn {
+                        // Network status banner
+                        item {
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+
+
+                                ) {
+                                Row(
+                                    modifier = Modifier.padding(16.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        imageVector = if (isOnline) Icons.Default.Wifi
+                                        else Icons.Default.WifiOff,
+                                        contentDescription = null,
+                                        tint = if (isOnline) Color.Green else Color.Red
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = if (isOnline) "Online - Live data"
+                                        else "Offline - Cached data",
+                                        color = if (isOnline) Color.Green else Color.Red
+                                    )
+                                }
+                            }
+                        }
+
+                        // Hotspots list
+                        items(homeViewModel.hotspotsSimple.value) { hotspot ->
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(8.dp),
+                                elevation = CardDefaults.cardElevation(4.dp)
+                            ) {
+                                Column(modifier = Modifier.padding(16.dp)) {
+                                    Text(
+                                        text = hotspot.locName,
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 16.sp
+                                    )
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Text("${hotspot.numSpeciesAllTime} species")
+                                    Text("Last seen: ${formatDate(hotspot.latestObsDt)}")
+
+                                    // Show cached badge if offline
+                                    if (!isOnline) {
+                                        Spacer(modifier = Modifier.height(4.dp))
+                                        Text(
+                                            "📱 Cached",
+                                            color = Color.Gray,
+                                            fontSize = 12.sp
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                 }
+            }
+
+
             }
         }
     }

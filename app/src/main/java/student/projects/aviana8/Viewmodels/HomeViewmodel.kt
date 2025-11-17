@@ -77,46 +77,9 @@ class HomeViewModel(
     val errorMessageSimple = mutableStateOf<String?>(null)
 
     // Simple methods
-    fun loadData(isOnline: Boolean, lat: Double = 40.7128, lng: Double = -74.0060) {
-        viewModelScope.launch {
-            isLoadingSimple.value = true
-            errorMessageSimple.value = null
-            delay(3000)
 
-            try {
-                if (isOnline) {
-                    // Fetch from API and cache
-                    val result = hotspotRepository.getNearbyHotspots(lat, lng, ebirdApiKey)
-                    if (result.isSuccess) {
-                        hotspotsSimple.value = result.getOrDefault(emptyList())
-                    } else {
-                        // If API fails, try cache
-                        loadFromCache()
-                    }
-                } else {
-                    // Offline - load from cache
-                    loadFromCache()
-                }
-            } catch (e: Exception) {
-                errorMessageSimple.value = "Error: ${e.message}"
-            } finally {
-                isLoadingSimple.value = false
-            }
-        }
-    }
 
-    private suspend fun loadFromCache() {
-        val cachedData = hotspotRepository.getCachedHotspots()
-        if (cachedDataSimple.value.isNotEmpty()) {
-            hotspotsSimple.value = cachedData.getOrDefault(emptyList())
-        } else {
-            errorMessageSimple.value = "No cached data available"
-        }
-    }
 
-    fun refresh(isOnline: Boolean) {
-        loadData(isOnline)
-    }
 
     @RequiresPermission(allOf = [ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION])
     fun getCurrentLocation() {
@@ -189,7 +152,7 @@ class HomeViewModel(
 
     fun fetchNearbyHotspots(forceRefresh: Boolean = false) {
         viewModelScope.launch {
-            checkNetworkStatus()
+            //checkNetworkStatus()
 
             val location = _currentLocation.value
             if (location == null) {
@@ -204,14 +167,17 @@ class HomeViewModel(
             val (lat, lng) = location
 
             when (val result = hotspotRepository.getNearbyHotspots(lat, lng, ebirdApiKey)) {
-                /*is Result.Failure -> {
-                    _hotspotsState.value = NetworkResponse.Error(result.exception.message ?: "Unknown error")
+                is NetworkResponse.Success -> {
+
+                    _hotspotsState.value = NetworkResponse.Success(
+                        result.data.getOrDefault(emptyList()))
+                    hotspotsSimple.value = result.data.getOrDefault(emptyList())
                     updateCacheInfo()
-                }*/
+                }
                 else -> {
-                    var it = result.getOrNull()
-                    _hotspotsState.value = NetworkResponse.Success(it!!)
-                    updateCacheInfo()
+//                    var it = result.
+//                    _hotspotsState.value = NetworkResponse.Success(it!!)
+//                    updateCacheInfo()
                 }
             }
         }

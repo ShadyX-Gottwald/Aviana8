@@ -9,6 +9,7 @@ import retrofit2.http.HeaderMap
 import retrofit2.http.Query
 import student.projects.aviana8.Data.HotspotEntity
 import student.projects.aviana8.Data.SightingEntity
+import student.projects.aviana8.Data.TaxonomicBird
 
 // 1. API Response Models
 data class BirdHotspot(
@@ -36,6 +37,12 @@ interface IBirdHotspot {
         @Query("lat") lat: Double,
         @Query("lng") lng: Double,
     ): Response<List<BirdHotspot>>
+
+    @GET("/v2/ref/taxonomy/ebird?=&fmt=json")
+    suspend fun getDefaultTaxonomicBirds(
+        @HeaderMap ebirdKey: Map<String, String> ,
+        @Query("locale") locale: String
+    ): Response<List<TaxonomicBird>>
 
     @GET("v2/data/obs/geo/recent/notable")
     suspend fun getNotableBirdSightings(

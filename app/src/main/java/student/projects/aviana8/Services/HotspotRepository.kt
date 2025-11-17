@@ -2,6 +2,7 @@ package student.projects.aviana8.Services
 
 import android.content.Context
 import student.projects.aviana8.Data.BirdDatabase
+import student.projects.aviana8.Viewmodels.NetworkResponse
 
 class HotspotRepository(
     private val hotspotService: IBirdHotspot,
@@ -10,95 +11,51 @@ class HotspotRepository(
     private val context: Context
 ) {
     private val hotspotDao = database.hotspotDao()
-  //  private val sightingDao = database.sightingDao()
-
-    suspend fun getNearbyHotspotsSimple(lat: Double, lng: Double, apiKey: String): Result<List<BirdHotspot>> {
-        return try {
-            // In real app, this would call the API
-            // For demo, return fake data and cache it
-            val fakeHotspots = listOf(
-                BirdHotspot(
-                    locId = "1",
-                    locName = "Central Park",
-                    lat = 40.7851,
-                    lng = -73.9683,
-                    numSpeciesAllTime = 285,
-                    latestObsDt = "2024-01-15",
+    //  private val sightingDao = database.sightingDao()
 
 
-                ),
-                BirdHotspot(
-                    locId = "2",
-                    locName = "Prospect Park",
-                    lat = 40.6602,
-                    lng = -73.9690,
-                    numSpeciesAllTime = 267,
-                    latestObsDt = "2024-01-14",
+    suspend fun getNearbyHotspots(
+        lat: Double,
+        lng: Double,
+        apiKey: String
+    ): NetworkResponse<Result<List<BirdHotspot>>> {
+        try {
+            // ONLINE: Fetch from API and cache
+            val headers = mapOf("X-eBirdApiToken" to "rhj2pqdjsgpu")
+            val response = hotspotService.getHotspotLocations(headers, lat, lng)
 
-                )
-            )
+            if (response.isSuccessful) {
+                val hotspots = response.body() ?: emptyList()
 
-            // Cache the data
-            val entities = fakeHotspots.map { it.toEntity() }
-            hotspotDao.deleteAllHotspots()
-            hotspotDao.insertHotspots(entities)
+                // Cache to database (replace old data)
+//                val entities = hotspots.map { it.toEntity() }
+//                hotspotDao.deleteAllHotspots() // Clear old cache
+//                hotspotDao.insertHotspots(entities) // Save new data
 
-            Result.success(fakeHotspots)
+                Result.success(hotspots)
+
+            } else {
+                // API failed, try cached data
+                //  getCachedHotspots()
+               // return NetworkResponse.Error(Result.failure(e))
+            }
         } catch (e: Exception) {
-            Result.failure(e)
+            return NetworkResponse.Error(e.message!!,Result.success(emptyList()))
         }
-    }
 
-    suspend fun getCachedHotspotsSimple(): List<BirdHotspot> {
-        return try {
-            hotspotDao.getAllHotspots().map { it.toBirdHotspot() }
-           // Result.success()
-        } catch (e: Exception) {
-            emptyList()
-        }
-    }
-
-    suspend fun getNearbyHotspots(lat: Double, lng: Double, apiKey: String): Result<List<BirdHotspot>> {
-        return try {
-            if (networkMonitor.isConnected()) {
-                // ONLINE: Fetch from API and cache
-                val headers = mapOf("X-eBirdApiToken" to "rhj2pqdjsgpu")
-                val response = hotspotService.getHotspotLocations(headers, lat, lng)
-
-                if (response.isSuccessful) {
-                    val hotspots = response.body() ?: emptyList()
-
-                    // Cache to database (replace old data)
-                    val entities = hotspots.map { it.toEntity() }
-                    hotspotDao.deleteAllHotspots() // Clear old cache
-                    hotspotDao.insertHotspots(entities) // Save new data
-
-                    Result.success(hotspots)
-
+        suspend fun getCachedHotspots(): NetworkResponse<Result<List<BirdHotspot>>> {
+            try {
+                val cached = hotspotDao.getAllHotspots()
+                if (cached.isNotEmpty()) {
+                    Result.success(cached.map { it.toBirdHotspot() })
                 } else {
-                    // API failed, try cached data
-                    getCachedHotspots()
+                    Result.failure(Exception("No cached data available"))
                 }
-            } else {
-                // OFFLINE: Return cached data
-                getCachedHotspots()
+            } catch (e: Exception) {
+                Result.failure(e)
             }
-        } catch (e: Exception) {
-            // On any error, try cached data
-            getCachedHotspots()
+            return NetworkResponse.Success(Result.success(emptyList()))
         }
-    }
-
-    suspend fun getCachedHotspots(): Result<List<BirdHotspot>> {
-        return try {
-            val cached = hotspotDao.getAllHotspots()
-            if (cached.isNotEmpty()) {
-                Result.success(cached.map { it.toBirdHotspot() })
-            } else {
-                Result.failure(Exception("No cached data available"))
-            }
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
+        return NetworkResponse.Success(Result.success(emptyList()))
     }
 }
