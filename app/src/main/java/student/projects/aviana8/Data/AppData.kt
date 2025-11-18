@@ -118,7 +118,21 @@ object AppStrings {
         "login" to "Login",
         "signup" to "Sign Up",
         "welcome" to "Welcome",
-        "get_started" to "Get Started"
+        "get_started" to "Get Started" ,
+        "Birds" to "Birds" ,
+        "Profile" to "Profile" ,
+        "Aviana" to "Aviana" ,
+        //Aviana , Aviana , Aviana
+        "Home" to "Home" ,
+        "Family" to "Family" ,
+        "Bird_watching_progress" to "Bird Watching Progress" ,
+        "save_to_my_birds" to "Save to my birds"
+
+//                Bird Watching Progress ,Voëlkykvoortgang , Inqubekela phambili yokubukela iintaka
+//                Family , Familie ,Usapho
+//                Home , Tuis ,Ikhaya
+//                Aviana , Aviana , Aviana
+//                Save to my birds , Stoor by my voëls , Gcina kwiintaka zam
     )
 
     // Afrikaans strings
@@ -214,7 +228,13 @@ object AppStrings {
         "login" to "Teken In",
         "signup" to "Teken Aan",
         "welcome" to "Welkom",
-        "get_started" to "Begin"
+        "get_started" to "Begin" ,
+        "Birds" to "Voëls" ,
+        "Profile" to "Profiel",
+        "Home" to "Tuis" ,
+        "Family" to "Familie" ,
+        "Bird_watching_progress" to "Voëlkykvoortgang" ,
+        "save_to_my_birds" to "Stoor by my voëls "
     )
 
     // Xhosa strings
@@ -310,7 +330,14 @@ object AppStrings {
         "login" to "Ngena",
         "signup" to "Bhalisa",
         "welcome" to "Wamkelekile",
-        "get_started" to "Qala"
+        "get_started" to "Qala" ,
+        "Birds" to "Intaka" ,
+        "Profile" to "Iprofayile" ,
+        "Home" to "Ikhaya" ,
+        "Family" to "Usapho" ,
+        "Bird_watching_progress" to "Inqubekela phambili yokubukela iintaka" ,
+        "save_to_my_birds" to "Gcina kwiintaka zam"
+
     )
 
     fun getString(key: String, language: String): String {

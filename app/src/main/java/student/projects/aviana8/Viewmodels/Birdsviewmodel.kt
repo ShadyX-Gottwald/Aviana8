@@ -85,9 +85,10 @@ class BirdsViewModel(
 
     init {
         loadBirds()
+        initializeAchievements(LDB)
     }
 
-    private fun initializeAchievements() {
+    private fun initializeAchievements(db: BirdDatabase) {
         viewModelScope.launch {
             // Define initial achievements
             val initialAchievements = listOf(
@@ -118,11 +119,11 @@ class BirdsViewModel(
             )
 
             // Insert achievements if they don't exist
-//            initialAchievements.forEach { achievement ->
-//                if (birdDB..getAchievementById(achievement.id) == null) {
-//                    achievementDao.insertAchievement(achievement)
-//                }
-//            }
+            initialAchievements.forEach { achievement ->
+                if (db.achievementDao().getAchievementById(achievement.id) == null) {
+                   db.achievementDao().insertAchievement(achievement)
+                }
+            }
         }
     }
 
@@ -142,7 +143,7 @@ class BirdsViewModel(
                 if (birds.isSuccessful) {
                     val birds = birds.body()!!
 
-                    _birdsState.value = birds.take(30)
+                    _birdsState.value = birds.take(40)
 
 
                 } else {
@@ -221,6 +222,8 @@ class BirdsViewModel(
 
                 // Save to local database
                 db.birdDao().insertBird(savedBird)
+
+
 
                 // Check and update achievements
                 checkAndUpdateAchievements(db)

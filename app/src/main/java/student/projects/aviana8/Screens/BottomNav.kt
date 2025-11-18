@@ -1,5 +1,6 @@
 package student.projects.aviana8.Screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -23,7 +24,8 @@ import student.projects.aviana8.Viewmodels.BirdsViewModel
 import student.projects.aviana8.Viewmodels.HomeViewModel
 import student.projects.aviana8.Viewmodels.ProfileViewModel
 import student.projects.aviana8.Screens.ProfileScreen
-
+import student.projects.aviana8.ui.theme.DarkPurpleBackGround
+import student.projects.aviana8.ui.theme.Peach
 
 
 @Composable
@@ -36,13 +38,14 @@ fun MainBottomNavigation(
 
     Scaffold(
         bottomBar = {
-            BottomAppBar {
+            BottomAppBar(modifier = Modifier.background(DarkPurpleBackGround)) {
                 NavigationBar {
                     val currentRoute = currentRoute(navController)
 
                     NavigationBarItem(
-                        icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
-                        label = { Text("Home") },
+                        icon = { Icon(Icons.Default.Home, contentDescription = "Home"
+                        ) },
+                        label = { Text(birdsViewModel.getString("home")) },
                         selected = currentRoute == Screen.Home.route,
                         onClick = {
                             navController.navigate(Screen.Home.route) {
@@ -52,8 +55,13 @@ fun MainBottomNavigation(
                     )
 
                     NavigationBarItem(
-                        icon = { Icon(Icons.Filled.Favorite, contentDescription = "Birds") },
-                        label = { Text("Birds") },
+                        icon = { Icon(Icons.Filled.Favorite,
+                            contentDescription = "Birds"
+                                )
+                               },
+                        label = { Text(
+                            text = birdsViewModel.getString("Birds")
+                        ) },
                         selected = currentRoute == Screen.Birds.route,
                         onClick = {
                             navController.navigate(Screen.Birds.route) {
@@ -63,8 +71,11 @@ fun MainBottomNavigation(
                     )
 
                     NavigationBarItem(
-                        icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
-                        label = { Text("Profile") },
+                        icon = { Icon(Icons.Default.Person,
+                            contentDescription = "Profile"
+                                )
+                               },
+                        label = { Text(birdsViewModel.getString("Profile")) },
                         selected = currentRoute == Screen.ProfileSettings.route,
                         onClick = {
                             navController.navigate(Screen.ProfileSettings.route) {

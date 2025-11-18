@@ -107,7 +107,7 @@ fun BirdsScreen(birdsViewModel: BirdsViewModel) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Bird Watch",
+                    text = "Aviana",
                     style = MaterialTheme.typography.headlineMedium,
                     color = HomePeach,
                     fontWeight = FontWeight.Bold
@@ -215,7 +215,7 @@ fun BirdsScreen(birdsViewModel: BirdsViewModel) {
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
                 Text(
-                    text = "Bird Watching Progress",
+                    text = "Bird Watching Progress" ,
                     color = TextBrown,
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Medium
@@ -240,7 +240,7 @@ fun BirdsScreen(birdsViewModel: BirdsViewModel) {
                 if (earnedAchievements.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "Achievements:",
+                        text = "${birdsViewModel.getString("achievements")}:",
                         color = TextBrown,
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Medium
@@ -276,7 +276,7 @@ fun BirdsScreen(birdsViewModel: BirdsViewModel) {
                     CircularProgressIndicator(color = Peach)
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(
-                        text = "Loading birds...",
+                        text = birdsViewModel.getString("loading_birds"),
                         color = TextBrown
                     )
                 }
@@ -290,7 +290,7 @@ fun BirdsScreen(birdsViewModel: BirdsViewModel) {
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
-                        text = "No birds found",
+                        text = "${birdsViewModel.getString("no_birds_found")}",
                         color = TextBrown,
                         style = MaterialTheme.typography.titleMedium
                     )
@@ -299,7 +299,7 @@ fun BirdsScreen(birdsViewModel: BirdsViewModel) {
                         onClick = { birdsViewModel.loadBirds() },
                         colors = ButtonDefaults.buttonColors(containerColor = Peach)
                     ) {
-                        Text("Retry", color = DarkPurpleBackGround)
+                        Text("${birdsViewModel.getString("retry")}", color = DarkPurpleBackGround)
                     }
                 }
             }
@@ -324,7 +324,8 @@ fun BirdsScreen(birdsViewModel: BirdsViewModel) {
                             }
                         },
                         isSaving = isSaving,
-                        isAlreadySaved = savedBirds.any { it.speciesCode == bird.speciesCode }
+                        isAlreadySaved = savedBirds.any { it.speciesCode == bird.speciesCode } ,
+                        birdsViewModel = birdsViewModel
                     )
                 }
             }
@@ -339,7 +340,8 @@ fun BirdCard(
     onSaveClick: () -> Unit,
     isSaving: Boolean = false,
     isAlreadySaved: Boolean = false,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier ,
+    birdsViewModel: BirdsViewModel
 ) {
     Card(
         modifier = modifier
@@ -385,7 +387,7 @@ fun BirdCard(
             bird.familyComName?.let { family ->
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Family: $family",
+                    text = "${birdsViewModel.getString("Family")}: $family",
                     style = MaterialTheme.typography.bodySmall,
                     color = TextBrown.copy(alpha = 0.6f)
                 )
@@ -409,7 +411,7 @@ fun BirdCard(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Saving...",
+                        text = "${birdsViewModel.getString("saving")}",
                         color = DarkPurpleBackGround,
                         fontWeight = FontWeight.Medium
                     )
@@ -421,13 +423,13 @@ fun BirdCard(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Already Saved",
+                        text = "${birdsViewModel.getString("already_saved")}",
                         color = WhiteishBg,
                         fontWeight = FontWeight.Medium
                     )
                 } else {
                     Text(
-                        text = "Save to My Birds",
+                        text = "${birdsViewModel.getString("save_to_my_birds")}",
                         color = DarkPurpleBackGround,
                         fontWeight = FontWeight.Medium
                     )
