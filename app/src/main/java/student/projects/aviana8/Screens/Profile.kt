@@ -1,5 +1,6 @@
 package student.projects.aviana8.Screens
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,6 +25,7 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarOutline
 import androidx.compose.material3.Button
@@ -43,9 +45,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.google.firebase.messaging.FirebaseMessaging
 import student.projects.aviana8.Data.AchievementEntity
 import student.projects.aviana8.Data.AppLanguage
 import student.projects.aviana8.Data.SavedBird
@@ -76,6 +81,7 @@ fun ProfileScreen(
     val earnedAchievementsCount by viewModel.getEarnedAchievementsCount().collectAsState(initial = 0)
 
     val currentLanguage = viewModel.currentLanguage.value
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -114,11 +120,81 @@ fun ProfileScreen(
             }
         }
 
+        Column {
+            // Test Notifications Section - Put this FIRST so it's immediately visible
+
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 24.dp),
+                colors = CardDefaults.cardColors(containerColor = Peach),
+                elevation = CardDefaults.cardElevation(4.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        Icons.Default.Notifications,
+                        contentDescription = "Notifications",
+                        tint = DarkPurpleBackGround,
+                        modifier = Modifier.size(48.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Text(
+                        text = "FCM Notifications Ready!",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = DarkPurpleBackGround,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center
+                    )
+
+                    Text(
+                        text = "Your device is subscribed to receive test notifications",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = DarkPurpleBackGround,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    )
+
+                    Button(
+                        onClick = {
+                            // Manually trigger topic subscription
+                            FirebaseMessaging.getInstance().subscribeToTopic("test")
+                                .addOnCompleteListener { task ->
+                                    val message = if (task.isSuccessful) {
+                                        "Subscribed to test topic!"
+                                    } else {
+                                        "Subscription failed"
+                                    }
+                                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                                }
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = DarkPurpleBackGround),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "Subscribe to Test Topic",
+                            color = WhiteishBg
+                        )
+                    }
+
+
+                }
+            }
+        }
+
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
+
             // User Stats Section
             item {
                 Text(
@@ -265,6 +341,8 @@ fun ProfileScreen(
                 Spacer(modifier = Modifier.height(32.dp))
             }
         }
+
+
     }
 }
 

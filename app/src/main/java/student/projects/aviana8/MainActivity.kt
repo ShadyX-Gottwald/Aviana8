@@ -1,7 +1,14 @@
 package student.projects.aviana8
 
 import android.R
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
+import android.content.Context.NOTIFICATION_SERVICE
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 
@@ -17,10 +24,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.messaging.FirebaseMessaging
 import student.projects.aviana8.Data.BirdDatabase
 import student.projects.aviana8.Screens.LoginPage
 
@@ -28,10 +37,13 @@ import student.projects.aviana8.Screens.MainBottomNavigation
 
 import student.projects.aviana8.Screens.Screen
 import student.projects.aviana8.Screens.WelcomeScreen
+import student.projects.aviana8.Services.BirdWatchMessagingService
+import student.projects.aviana8.Services.FCMManager
 import student.projects.aviana8.Services.HotspotAPIClient
 import student.projects.aviana8.Services.HotspotRepository
 import student.projects.aviana8.Services.LocationService
 import student.projects.aviana8.Services.NetworkMonitor
+import student.projects.aviana8.Services.NotificationPermissionManager
 import student.projects.aviana8.Services.SettingsManager
 import student.projects.aviana8.Viewmodels.AppViewModel
 
@@ -76,7 +88,12 @@ class MainActivity : ComponentActivity() {
         val homeViewModel by lazy{ HomeViewModel(
             hotspotRepository = hotspotRepository ,locationService) }
 
+       val notificationPermissionManager = NotificationPermissionManager(this)
+       val fcmManager = FCMManager(this)
+
         val birdsViewModel by lazy{ BirdsViewModel(birdDatabase,settingsManager) }
+        initializeFCM()
+
         setContent {
             Aviana8Theme {
                 Surface(
@@ -92,9 +109,61 @@ class MainActivity : ComponentActivity() {
                     )
                 }
             }
+            // Show toast that FCM is ready
+            Toast.makeText(this, "Bird Watch started - FCM ready!", Toast.LENGTH_SHORT).show()
         }
     }
 }
+
+private fun initializeFCM() {
+    // Automatically get token and subscribe to topics
+    FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+        if (task.isSuccessful) {
+            val token = task.result
+            Log.d("BirdWatchApp", "FCM Token obtained successfully")
+
+            // Subscribe to topics
+            subscribeToTopics()
+        }
+    }
+
+    // Also subscribe directly (in case token retrieval fails)
+    subscribeToTopics()
+}
+
+private fun subscribeToTopics() {
+    val topics = listOf("all_users", "test", "bird_watch")
+
+    topics.forEach { topic ->
+        FirebaseMessaging.getInstance().subscribeToTopic(topic)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Log.d("BirdWatchApp", "Subscribed to $topic topic")
+                } else {
+                    Log.e("BirdWatchApp", "Failed to subscribe to $topic topic")
+                }
+            }
+    }
+}
+
+private fun createNotificationChannel(context: Context) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        val channel = NotificationChannel(
+            BirdWatchMessagingService.CHANNEL_ID,
+            BirdWatchMessagingService.CHANNEL_NAME,
+            NotificationManager.IMPORTANCE_HIGH
+        ).apply {
+            description = "Notifications for bird sightings, achievements, and updates"
+            enableLights(true)
+            enableVibration(true)
+            setShowBadge(true)
+        }
+
+       // val notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
+      //  notificationManager.createNotificationChannel(channel)
+    }
+}
+
 
 // Main Navigation Composable
 @Composable

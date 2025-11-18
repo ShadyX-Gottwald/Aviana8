@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Aviana8</string>
+
+    <!-- Notification permission strings -->
+    <string name="notification_permission_title">Enable Notifications</string>
+    <string name="notification_permission_message">Receive alerts about bird sightings, achievements, and updates to enhance your bird watching experience.</string>
+    <string name="enable_notifications">Enable Notifications</string>
+    <string name="not_now">Not Now</string>
+    <string name="notification_permission_denied">Notifications are disabled. You can enable them in Settings.</string>
+    <string name="go_to_settings">Go to Settings</string>
 </resources>
