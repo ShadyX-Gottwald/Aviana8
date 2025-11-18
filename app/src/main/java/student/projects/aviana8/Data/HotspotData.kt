@@ -10,6 +10,7 @@ import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import kotlinx.coroutines.flow.Flow
 
 // 1. Database Entities
 @Entity(tableName = "hotspots")
@@ -47,11 +48,46 @@ interface HotspotDao {
     suspend fun deleteAllHotspots()
 }
 
+@Dao
+interface BirdDao {
+    @Query("SELECT * FROM saved_birds ORDER BY savedAt DESC")
+    fun getAllSavedBirds(): Flow<List<SavedBird>>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertBird(bird: SavedBird)
+
+    @Query("SELECT COUNT(*) FROM saved_birds")
+    suspend fun getSavedBirdsCount(): Int
+
+    @Query("SELECT * FROM saved_birds WHERE speciesCode = :speciesCode")
+    suspend fun getBirdBySpeciesCode(speciesCode: String): SavedBird?
+}
+
+@Dao
+interface AchievementDao {
+    @Query("SELECT * FROM achievements ORDER BY requiredCount ASC")
+    fun getAllAchievements(): Flow<List<AchievementEntity>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAchievement(achievement: AchievementEntity)
+
+    @Query("SELECT * FROM achievements WHERE id = :achievementId")
+    suspend fun getAchievementById(achievementId: String): AchievementEntity?
+
+    @Query("UPDATE achievements SET earned = :earned, earnedAt = :earnedAt WHERE id = :achievementId")
+    suspend fun updateAchievementEarned(achievementId: String, earned: Boolean, earnedAt: Long?)
+}
+
 // 3. Room Database
-@Database(entities = [HotspotEntity::class, SightingEntity::class], version = 1)
+@Database(entities = [HotspotEntity::class, SightingEntity::class ,
+    SavedBird::class , AchievementEntity::class], version = 1)
 abstract class BirdDatabase : RoomDatabase() {
     abstract fun hotspotDao(): HotspotDao
-   // abstract fun sightingDao(): SightingDao
+    abstract fun achievementDao(): AchievementDao
+    abstract fun birdDao(): BirdDao
+
+
+
 
     companion object {
         fun getInstance(context: Context): BirdDatabase {

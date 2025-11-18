@@ -22,6 +22,9 @@ import androidx.navigation.compose.rememberNavController
 import student.projects.aviana8.Viewmodels.BirdsViewModel
 import student.projects.aviana8.Viewmodels.HomeViewModel
 import student.projects.aviana8.Viewmodels.ProfileViewModel
+import student.projects.aviana8.Screens.ProfileScreen
+
+
 
 @Composable
 fun MainBottomNavigation(
@@ -88,7 +91,13 @@ fun MainBottomNavigation(
                 BirdsScreen(birdsViewModel = birdsViewModel)
             }
             composable(Screen.ProfileSettings.route) {
-                ProfileSettingsScreen(profileViewModel = profileViewModel)
+                ProfileScreen(
+                    //profileViewModel = profileViewModel,
+                    viewModel = birdsViewModel,
+                    onBackClick = {
+
+                    }
+                )
             }
         }
     }

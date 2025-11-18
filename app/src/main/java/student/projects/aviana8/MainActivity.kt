@@ -32,6 +32,7 @@ import student.projects.aviana8.Services.HotspotAPIClient
 import student.projects.aviana8.Services.HotspotRepository
 import student.projects.aviana8.Services.LocationService
 import student.projects.aviana8.Services.NetworkMonitor
+import student.projects.aviana8.Services.SettingsManager
 import student.projects.aviana8.Viewmodels.AppViewModel
 
 import student.projects.aviana8.Viewmodels.AuthViewModel
@@ -64,15 +65,18 @@ class MainActivity : ComponentActivity() {
             networkMonitor = networkMonitor,
             context = this
         )
+        val settingsManager = SettingsManager(this)
        // enableEdgeToEdge()
         // Initialize ViewModels
         appViewModel = ViewModelProvider(this)[AppViewModel::class.java]
         authViewModel = ViewModelProvider(this)[AuthViewModel::class.java]
         //homeViewModel = ViewModelProvider(this)[HomeViewModel::class.java]
-        birdsViewModel = ViewModelProvider(this)[BirdsViewModel::class.java]
+        //birdsViewModel = ViewModelProvider(this)[BirdsViewModel::class.java]
         profileViewModel = ViewModelProvider(this)[ProfileViewModel::class.java]
         val homeViewModel by lazy{ HomeViewModel(
             hotspotRepository = hotspotRepository ,locationService) }
+
+        val birdsViewModel by lazy{ BirdsViewModel(birdDatabase,settingsManager) }
         setContent {
             Aviana8Theme {
                 Surface(

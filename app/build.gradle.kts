@@ -85,6 +85,8 @@ dependencies {
     implementation(libs.googleid)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.database)
+    implementation(libs.androidx.foundation)
+    implementation(libs.firebase.messaging)
     kapt("androidx.room:room-compiler:2.6.0")
 
     // Lifecycle components

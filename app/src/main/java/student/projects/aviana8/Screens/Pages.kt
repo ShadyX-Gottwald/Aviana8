@@ -494,15 +494,7 @@ fun FooterSection() {
 
 
 // ProfileSettingsScreen.kt
-@Composable
-fun ProfileSettingsScreen(profileViewModel: ProfileViewModel) {
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Text("Profile & Settings", style = MaterialTheme.typography.headlineMedium)
-        // Profile and settings content
-    }
-}
+
 
 @Composable
 fun SettingsScreen(profileViewModel: ProfileViewModel) {
